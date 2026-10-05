@@ -8,8 +8,8 @@ export const STATUS_DISPO = ['On Progres', 'Done']
 export const STATUS_MOM = ['Open', 'Done']
 
 export const DEPTS = [
-  'Akunting', 'Corporate', 'Retail', 'Digicom', 'Finance', 'General Affair', 'Human Capital',
-  'Legal', 'Marketing', 'IT', 'Customer Service', 'Inbound 1', 'Inbound 2', 'Inbound Support',
+  'Akunting', 'Corporate', 'Retail', 'Digicom', 'Marketing', 'Sales', 'Finance', 'General Affair', 'Human Capital',
+  'Legal', 'IT', 'Customer Service', 'Inbound 1', 'Inbound 2', 'Inbound Support',
   'Outbound', 'PAO', 'Branch Business Partner', 'Cianjur', 'Garut', 'Sumedang', 'Rancaekek',
   'Soreang', 'Cimareme',
 ]
