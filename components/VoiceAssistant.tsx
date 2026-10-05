@@ -81,7 +81,7 @@ export function VoiceAssistant() {
       <button type="button" onClick={toggle} aria-label="Voice Assistant" aria-pressed={phase !== 'idle'}
         title="Voice Assistant — klik lalu ucapkan, mis. “hari ini ada agenda apa”"
         className={cx('btn', phase === 'listening' ? 'bg-[#d9534f] text-white animate-pulse' : phase === 'speaking' ? 'btn-dark' : 'btn-soft')}>
-        {phase === 'listening' ? <Mic size={14} /> : phase === 'speaking' ? <Square size={14} /> : <Mic size={14} />}
+        {phase === 'listening' ? <Mic size={14} /> : phase === 'speaking' ? <Square size={14} /> : <Mic size={14} className="text-[#d9534f]" />}
       </button>
 
       {open && (
