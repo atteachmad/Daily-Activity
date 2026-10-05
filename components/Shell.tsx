@@ -6,6 +6,7 @@ import { Home } from './Home'
 import { ModuleView } from './ModuleView'
 import { DISPOSISI, MOM, SPPD } from './modules'
 import { Spinner, cx } from './ui'
+import { VoiceAssistant } from './VoiceAssistant'
 
 const NAV = [
   { id: 'home', label: 'Home', icon: CalendarCheck2 },
@@ -53,6 +54,7 @@ export function Shell() {
             <span className={cx('pill', canEdit ? 'pill-green' : 'pill-amber')}>{canEdit ? 'Editor' : <><Eye size={12} />Monitoring (hanya lihat)</>}</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="hidden text-[11px] mute sm:inline">{lastSync && `Sinkron ${lastSync}`}</span>
+              <VoiceAssistant />
               <button className="btn btn-soft" onClick={refresh} disabled={syncing} title="Muat ulang data dari Google Sheets">{syncing ? <Spinner /> : <RefreshCw size={14} />}<span className="hidden sm:inline">Refresh</span></button>
               <button className="btn btn-soft" onClick={logout} title={`Keluar (${role})`}><LogOut size={14} /><span className="hidden sm:inline">Keluar</span></button>
             </div>
