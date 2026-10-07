@@ -7,6 +7,7 @@ import { ModuleView } from './ModuleView'
 import { DISPOSISI, MOM, SPPD } from './modules'
 import { Spinner, cx } from './ui'
 import { VoiceAssistant } from './VoiceAssistant'
+import { GreetingTicker } from './GreetingTicker'
 
 const NAV = [
   { id: 'home', label: 'Home', icon: CalendarCheck2 },
@@ -27,11 +28,13 @@ export function Shell() {
   const mini = collapsed && !drawer // di drawer mobile selalu tampil penuh
 
   const rail = (
-    <nav className={cx('rail flex h-full flex-col gap-2 p-3 transition-[width] duration-200', mini ? 'w-[76px]' : 'w-[224px]')} aria-label="Navigasi utama">
+    <nav onClick={e => { if (!drawer && !(e.target as HTMLElement).closest('button')) toggle() }}
+      title={drawer ? undefined : 'Klik area kosong untuk memperluas / menciutkan'}
+      className={cx('rail flex h-full flex-col gap-2 p-3 transition-[width] duration-200', !drawer && 'cursor-pointer', mini ? 'w-[76px]' : 'w-[224px]')} aria-label="Navigasi utama">
       <div className="flex flex-1 flex-col gap-2">
         {NAV.map(n => { const I = n.icon, on = active === n.id; return (
           <button key={n.id} onClick={() => go(n.id)} title={n.label} aria-current={on ? 'page' : undefined}
-            className={cx('flex h-[52px] items-center gap-3 rounded-2xl px-[15px] text-[14px] font-medium transition', on ? 'bg-[#111d33] text-white shadow-lg shadow-[#111d33]/25' : 'text-slate-600 hover:bg-slate-200/60')}>
+            className={cx('flex h-[52px] cursor-pointer items-center gap-3 rounded-2xl px-[15px] text-[14px] font-medium transition', on ? 'nav-active' : 'text-slate-600 hover:bg-slate-200/60')}>
             <I size={22} className="shrink-0" />{!mini && <span className="truncate">{n.label}</span>}
           </button>) })}
       </div>
@@ -52,6 +55,7 @@ export function Shell() {
             <button className="rounded-xl p-2 hover:bg-white/70 md:hidden" aria-label="Buka menu" onClick={() => setDrawer(d => !d)}>{drawer ? <X size={20} /> : <Menu size={20} />}</button>
             <p className="text-lg text-slate-500">Daily <b className="font-bold text-slate-900">Activity</b></p>
             <span className={cx('pill', canEdit ? 'pill-green' : 'pill-amber')}>{canEdit ? 'Editor' : <><Eye size={12} />Monitoring (hanya lihat)</>}</span>
+            {canEdit && <GreetingTicker />}
             <div className="ml-auto flex items-center gap-2">
               <span className="hidden text-[11px] mute sm:inline">{lastSync && `Sinkron ${lastSync}`}</span>
               <VoiceAssistant />
