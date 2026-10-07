@@ -17,13 +17,13 @@ function Clock() {
   const s = t?.getSeconds() ?? 0, m = (t?.getMinutes() ?? 0) + s / 60, h = ((t?.getHours() ?? 0) % 12) + m / 60
   return (
     <div className="card flex items-center gap-6 p-5">
-      <svg viewBox="0 0 200 200" className="size-36 shrink-0" role="img" aria-label="Jam analog">
+      <div className="clock-face shrink-0 p-2"><svg viewBox="0 0 200 200" className="size-32" role="img" aria-label="Jam analog">
         {Array.from({ length: 60 }, (_, i) => <line key={i} x1="100" y1={i % 5 ? 10 : 8} x2="100" y2={i % 5 ? 14 : 18} stroke="#8492a6" strokeWidth={i % 5 ? 1 : 2} transform={`rotate(${i * 6} 100 100)`} opacity={i % 15 === 0 ? 1 : .55} />)}
         <line x1="100" y1="100" x2="100" y2="52" stroke="#0e1a2b" strokeWidth="5" strokeLinecap="round" transform={`rotate(${h * 30} 100 100)`} />
         <line x1="100" y1="100" x2="100" y2="30" stroke="#0e1a2b" strokeWidth="3.5" strokeLinecap="round" transform={`rotate(${m * 6} 100 100)`} />
         <line x1="100" y1="112" x2="100" y2="26" stroke="#9db8f5" strokeWidth="1.5" strokeLinecap="round" transform={`rotate(${s * 6} 100 100)`} />
         <circle cx="100" cy="100" r="5.5" fill="#0e1a2b" />
-      </svg>
+      </svg></div>
       <div>
         <p className="text-3xl font-extrabold tracking-tight">{t ? t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '--.--'}</p>
         <p className="mt-1 text-sm mute">{t ? t.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }) : ' '}</p>
@@ -67,7 +67,7 @@ function MiniCalendar({ events, selected, onSelect }: { events: ReturnType<typeo
             const isToday = c.iso === today, isSel = c.iso === selected
             return (
               <button key={c.iso} onClick={() => pick(c)} aria-label={fmtLong(c.iso)} aria-pressed={isSel}
-                className={cx('mx-auto flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[14px] transition',
+                className={cx('mx-auto flex h-11 w-full max-w-[44px] flex-col items-center justify-center rounded-xl text-[14px] transition',
                   isToday ? 'bg-[#111d33] font-semibold text-white' : isSel ? 'bg-slate-300/70 font-semibold' : 'hover:bg-white/80',
                   !c.inMonth && !isToday && 'text-slate-400/80')}>
                 {c.day}
@@ -152,8 +152,8 @@ function TodoPanel({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
         <input className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-500 disabled:cursor-not-allowed" placeholder={canEdit ? 'Add todo, press ENTER to save' : 'Mode monitoring — hanya lihat'}
           value={text} disabled={!canEdit} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && add()} />
         {canEdit && <>
-          <input type="date" title="Jadwalkan (opsional)" className="w-[118px] rounded-lg bg-white/60 px-2 py-1 text-[11px] text-slate-600 outline-none" value={date} onChange={e => setDate(e.target.value)} onClick={e => (e.currentTarget as HTMLInputElement).showPicker?.()} />
-          <button onClick={add} aria-label="Simpan todo" className="flex items-center gap-1 rounded-lg bg-white/80 px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-white">{adding ? <Spinner size={12} /> : <CornerDownLeft size={12} />}ENTER</button></>}
+          <input type="date" title="Jadwalkan (opsional)" className="pressed w-[118px] rounded-lg px-2 py-1 text-[11px] text-slate-600 outline-none" value={date} onChange={e => setDate(e.target.value)} onClick={e => (e.currentTarget as HTMLInputElement).showPicker?.()} />
+          <button onClick={add} aria-label="Simpan todo" className="pressed flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-white">{adding ? <Spinner size={12} /> : <CornerDownLeft size={12} />}ENTER</button></>}
       </div>
 
       <div className="mt-4 space-y-1">
@@ -223,7 +223,7 @@ function Recent() {
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] mute">Update terbaru</p>
       <ul className="mt-2 space-y-2">{list.map((u, i) => (
         <li key={i} className="flex items-center gap-2.5 text-[12.5px]"><i className="size-2 shrink-0 rounded-full" style={{ background: KIND_COLOR[u.kind] }} />
-          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{new Date(u.at.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('id-ID', { day: '2-digit', month: 'long', timeZone: 'UTC' })}</span></li>))}</ul>
+          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{u.at.slice(5, 16)}</span></li>))}</ul>
     </div>
   )
 }
@@ -240,7 +240,7 @@ export function Home({ go }: { go: (id: string) => void }) {
   return (
     <div className="flex flex-col gap-5">
       <Kpis go={go} />
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
         <section className="panel p-5 sm:p-6">
           <h2 className="text-xl font-semibold tracking-tight">Planner</h2>
           <div className="mt-5 space-y-1">
