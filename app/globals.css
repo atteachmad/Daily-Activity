@@ -184,7 +184,7 @@ body {
 .frame { background: linear-gradient(180deg, rgba(246,249,252,.92), rgba(228,237,243,.9)); border: 1px solid rgba(255,255,255,.75); border-radius: 30px; box-shadow: 0 40px 90px -40px rgba(30,50,80,.45), inset 0 1px 0 #fff; }
 .rail { background: linear-gradient(180deg, #fbfdff, #eef4f8); border-right: 1px solid rgba(15,27,45,.05); }
 .panel { background: linear-gradient(180deg, rgba(196,212,224,.42), rgba(214,226,235,.30)); border-radius: 26px; border: 1px solid rgba(255,255,255,.5); }
-.card { background: linear-gradient(180deg, rgba(250,252,254,.94), rgba(233,240,246,.9)); border: 1px solid rgba(255,255,255,.95); border-radius: 22px; box-shadow: 0 14px 34px -18px rgba(50,72,110,.35), 0 2px 6px -2px rgba(50,72,110,.08); }
+.card { background: linear-gradient(145deg, rgba(251,253,255,.96), rgba(232,239,246,.92)); border: 1px solid rgba(255,255,255,.9); border-radius: 22px; box-shadow: 10px 10px 22px rgba(139,158,184,.42), -8px -8px 18px rgba(255,255,255,.95), inset 1px 1px 0 rgba(255,255,255,.9); }
 .hatch { background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.55) 0 2px, transparent 2px 6px); }
 .field { width: 100%; background: rgba(255,255,255,.72); border: 1px solid rgba(15,27,45,.1); border-radius: 14px; padding: .6rem .8rem; font-size: 13px; color: var(--ink); outline: none; transition: box-shadow .15s, border-color .15s; }
 .field:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(17,29,51,.12); }
@@ -193,9 +193,10 @@ body {
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-dark { background: var(--navy); color: #fff; } .btn-dark:hover:not(:disabled) { background: #1c2d4d; }
-.btn-soft { background: rgba(255,255,255,.78); color: var(--ink2); border: 1px solid rgba(15,27,45,.08); } .btn-soft:hover:not(:disabled) { background: #fff; }
+.btn-soft { background: rgba(236,242,248,.9); color: var(--ink2); border: 1px solid rgba(255,255,255,.7); box-shadow: inset 2px 2px 5px rgba(120,140,165,.30), inset -2px -2px 5px rgba(255,255,255,.95); } .btn-soft:hover:not(:disabled) { background: rgba(243,247,251,.95); } .btn-soft:active:not(:disabled) { box-shadow: inset 3px 3px 7px rgba(120,140,165,.42), inset -2px -2px 5px rgba(255,255,255,.95); }
 .btn-xs { padding: .25rem .55rem; font-size: 11px; border-radius: 9px; }
 .pill { display: inline-flex; align-items: center; gap: .25rem; border-radius: 999px; padding: .15rem .6rem; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.pill-gray { box-shadow: inset 1px 1px 3px rgba(120,140,165,.28), inset -1px -1px 3px rgba(255,255,255,.9); }
 .pill-blue { background: #e2eaff; color: #3b62d1; } .pill-green { background: #dcf3e8; color: #23805a; }
 .pill-amber { background: #fdeed2; color: #a8690b; } .pill-gray { background: #e3e9ef; color: #5a6a7d; } .pill-red { background: #fde1df; color: #b5352f; }
 .scroll-thin::-webkit-scrollbar { height: 8px; width: 8px; } .scroll-thin::-webkit-scrollbar-thumb { background: rgba(15,27,45,.18); border-radius: 8px; }
@@ -209,3 +210,21 @@ table.grid tbody tr:hover td { background: rgba(255,255,255,.55); }
 .mute { color: var(--mute); }
 
 }
+/* ---- Sapaan berjalan (running text) ---- */
+.ticker { overflow: hidden; border-radius: 999px; padding: .35rem 0; background: rgba(255,255,255,.55); box-shadow: inset 2px 2px 5px rgba(120,140,165,.28), inset -2px -2px 5px rgba(255,255,255,.9); -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.ticker-track { display: flex; width: max-content; animation: ticker 40s linear infinite; font-size: 13px; font-weight: 600; color: var(--navy); }
+.ticker-track span { padding-right: 4rem; white-space: nowrap; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } .ticker { mask-image: none; -webkit-mask-image: none; overflow-x: auto; } }
+
+/* ---- Navigasi aktif: cekung (pressed-in) biru muda lembut ---- */
+.nav-active { background: linear-gradient(145deg, #dfe6fb, #e9eefd); color: #14264d; font-weight: 700;
+  box-shadow: inset 4px 4px 9px rgba(96,116,170,.38), inset -4px -4px 9px rgba(255,255,255,.95), inset 1px 1px 0 rgba(96,116,170,.12); }
+
+/* ---- Elemen cekung kecil (ENTER, pemilih tanggal) ---- */
+.pressed { background: rgba(236,242,248,.9); box-shadow: inset 2px 2px 5px rgba(120,140,165,.30), inset -2px -2px 5px rgba(255,255,255,.95); }
+
+/* ---- Jam analog: bingkai fisik timbul dengan bayangan melingkar ---- */
+.clock-face { border-radius: 9999px; background: radial-gradient(circle at 32% 28%, #ffffff, #e6edf4 72%);
+  box-shadow: 9px 9px 20px rgba(139,158,184,.5), -9px -9px 20px rgba(255,255,255,.98), inset 3px 3px 7px rgba(255,255,255,.95), inset -4px -4px 9px rgba(139,158,184,.28); }
