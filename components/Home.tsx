@@ -223,7 +223,7 @@ function Recent() {
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] mute">Update terbaru</p>
       <ul className="mt-2 space-y-2">{list.map((u, i) => (
         <li key={i} className="flex items-center gap-2.5 text-[12.5px]"><i className="size-2 shrink-0 rounded-full" style={{ background: KIND_COLOR[u.kind] }} />
-          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{u.at.slice(5, 16)}</span></li>))}</ul>
+          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{new Date(u.at.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('id-ID', { day: '2-digit', month: 'long', timeZone: 'UTC' })}</span></li>))}</ul>
     </div>
   )
 }
