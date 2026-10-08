@@ -62,7 +62,7 @@ export function ModuleView({ cfg }: { cfg: ModuleCfg }) {
 
         <div className="card scroll-thin max-h-[62vh] overflow-auto !rounded-2xl">
           {view.length === 0 ? <Empty title={rows.length ? 'Tidak ada data yang cocok' : 'Belum ada data'} hint={rows.length ? 'Ubah kata kunci atau filter.' : cfg.emptyHint} /> : (
-            <table className="grid">
+            <table className="tbl">
               <thead><tr>{cfg.columns.map(c => <th key={c.label}>{c.label}</th>)}{canEdit && <th>Aksi</th>}</tr></thead>
               <tbody>{view.map((r, i) => (
                 <tr key={r.id}>

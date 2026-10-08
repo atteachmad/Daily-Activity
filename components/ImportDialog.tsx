@@ -82,7 +82,7 @@ export function ImportDialog({ kind, onClose }: { kind: ImportKind; onClose: () 
             <p className="text-xs text-slate-600"><FileSpreadsheet size={13} className="mr-1 inline" />Sheet dipakai: {parsed.sheets.map(s => `${s.name} (${s.rows})`).join(', ')}{parsed.ignoredSheets.length > 0 && <span className="mute"> · dilewati: {parsed.ignoredSheets.join(', ')}</span>}</p>
             {fresh.length > 0 && (
               <div className="scroll-thin overflow-x-auto rounded-2xl bg-white/60">
-                <table className="grid"><thead><tr>{PREVIEW[kind].map(c => <th key={c.k}>{c.l}</th>)}</tr></thead>
+                <table className="tbl"><thead><tr>{PREVIEW[kind].map(c => <th key={c.k}>{c.l}</th>)}</tr></thead>
                   <tbody>{fresh.slice(0, 5).map((r, i) => <tr key={i}>{PREVIEW[kind].map(c => <td key={c.k} className="max-w-[260px] truncate">{c.date ? fmtDate(r[c.k]) : String(r[c.k] ?? '—')}</td>)}</tr>)}</tbody></table>
                 {fresh.length > 5 && <p className="px-3 py-2 text-[11px] mute">…dan {fresh.length - 5} baris lainnya</p>}
               </div>
