@@ -16,18 +16,18 @@ function Clock() {
   useEffect(() => { const f = () => setT(nowWIB()); f(); const i = setInterval(f, 1000); return () => clearInterval(i) }, [])
   const s = t?.getSeconds() ?? 0, m = (t?.getMinutes() ?? 0) + s / 60, h = ((t?.getHours() ?? 0) % 12) + m / 60
   return (
-    <div className="card flex items-center gap-6 p-5">
-      <div className="clock-face shrink-0 p-2"><svg viewBox="0 0 200 200" className="size-32" role="img" aria-label="Jam analog">
-        {Array.from({ length: 60 }, (_, i) => <line key={i} x1="100" y1={i % 5 ? 10 : 8} x2="100" y2={i % 5 ? 14 : 18} stroke="#8492a6" strokeWidth={i % 5 ? 1 : 2} transform={`rotate(${i * 6} 100 100)`} opacity={i % 15 === 0 ? 1 : .55} />)}
-        <line x1="100" y1="100" x2="100" y2="52" stroke="#0e1a2b" strokeWidth="5" strokeLinecap="round" transform={`rotate(${h * 30} 100 100)`} />
-        <line x1="100" y1="100" x2="100" y2="30" stroke="#0e1a2b" strokeWidth="3.5" strokeLinecap="round" transform={`rotate(${m * 6} 100 100)`} />
-        <line x1="100" y1="112" x2="100" y2="26" stroke="#9db8f5" strokeWidth="1.5" strokeLinecap="round" transform={`rotate(${s * 6} 100 100)`} />
-        <circle cx="100" cy="100" r="5.5" fill="#0e1a2b" />
-      </svg></div>
+    <div className="card flex items-center gap-7 p-5">
+      <div className="clock-wall shrink-0"><div className="clock-dial"><svg viewBox="0 0 200 200" className="block size-32" role="img" aria-label="Jam analog">
+        <circle cx="100" cy="100" r="78" fill="none" stroke="#c9d5e2" strokeWidth="1" />
+        {Array.from({ length: 12 }, (_, i) => <line key={i} x1="100" y1="12" x2="100" y2={i % 3 ? 22 : 26} stroke="#46556b" strokeWidth={i % 3 ? 4 : 5} strokeLinecap="round" transform={`rotate(${i * 30} 100 100)`} />)}
+        <line className="clock-hand" x1="100" y1="108" x2="100" y2="54" stroke="#16264a" strokeWidth="7" strokeLinecap="round" transform={`rotate(${h * 30} 100 100)`} />
+        <line className="clock-hand" x1="100" y1="112" x2="100" y2="26" stroke="#4f7cf0" strokeWidth="3.5" strokeLinecap="round" transform={`rotate(${m * 6} 100 100)`} />
+        <line className="clock-hand" x1="100" y1="116" x2="100" y2="22" stroke="#e5604f" strokeWidth="1.6" strokeLinecap="round" transform={`rotate(${s * 6} 100 100)`} />
+        <circle cx="100" cy="100" r="6.5" fill="#4f7cf0" stroke="#e9eff5" strokeWidth="2" />
+      </svg></div></div>
       <div>
-        <p className="text-3xl font-extrabold tracking-tight">{t ? t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '--.--'}</p>
+        <p className="flex items-baseline gap-1.5 text-3xl font-extrabold tracking-tight">{t ? t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '--.--'}<span className="text-xs font-bold tracking-widest text-slate-400">WIB</span></p>
         <p className="mt-1 text-sm mute">{t ? t.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }) : ' '}</p>
-        <p className="mt-0.5 text-[11px] mute">WIB</p>
       </div>
     </div>
   )
@@ -223,7 +223,7 @@ function Recent() {
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] mute">Update terbaru</p>
       <ul className="mt-2 space-y-2">{list.map((u, i) => (
         <li key={i} className="flex items-center gap-2.5 text-[12.5px]"><i className="size-2 shrink-0 rounded-full" style={{ background: KIND_COLOR[u.kind] }} />
-          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{new Date(u.at.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('id-ID', { day: '2-digit', month: 'long', timeZone: 'UTC' })}</span></li>))}</ul>
+          <span className="min-w-0 flex-1 truncate" title={u.text}><b className="font-semibold">{KIND_LABEL[u.kind]}</b> · {u.text}</span><span className="shrink-0 text-[11px] mute">{u.at.slice(5, 16)}</span></li>))}</ul>
     </div>
   )
 }
