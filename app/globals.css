@@ -225,6 +225,9 @@ table.tbl tbody tr:hover td { background: rgba(255,255,255,.55); }
 /* ---- Elemen cekung kecil (ENTER, pemilih tanggal) ---- */
 .pressed { background: rgba(236,242,248,.9); box-shadow: inset 2px 2px 5px rgba(120,140,165,.30), inset -2px -2px 5px rgba(255,255,255,.95); }
 
-/* ---- Jam analog: bingkai fisik timbul dengan bayangan melingkar ---- */
-.clock-face { border-radius: 9999px; background: radial-gradient(circle at 32% 28%, #ffffff, #e6edf4 72%);
-  box-shadow: 9px 9px 20px rgba(139,158,184,.5), -9px -9px 20px rgba(255,255,255,.98), inset 3px 3px 7px rgba(255,255,255,.95), inset -4px -4px 9px rgba(139,158,184,.28); }
+/* ---- Jam dinding: bingkai timbul + piringan cekung ---- */
+.clock-wall { border-radius: 9999px; padding: 12px; background: linear-gradient(145deg, #f7fafd, #dfe7ef);
+  box-shadow: 14px 14px 28px rgba(139,158,184,.55), -12px -12px 26px rgba(255,255,255,1), 0 0 0 1px rgba(255,255,255,.7), inset 2px 2px 4px rgba(255,255,255,.9), inset -2px -2px 5px rgba(139,158,184,.25); }
+.clock-dial { border-radius: 9999px; background: radial-gradient(circle at 65% 70%, #e9eff5, #f4f8fb 70%);
+  box-shadow: inset 6px 6px 12px rgba(139,158,184,.45), inset -6px -6px 12px rgba(255,255,255,.95); }
+.clock-hand { filter: drop-shadow(1.5px 2px 1.5px rgba(14,26,43,.28)); }
