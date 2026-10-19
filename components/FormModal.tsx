@@ -1,21 +1,44 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Modal, FieldInput, Spinner } from './ui'
+import { NumberHint } from './NumberHint'
+import { useStore } from './Store'
+import { checkNumber, type NumKind } from '@/lib/numbering'
 import type { Field } from '@/lib/schema'
 import type { Rec } from '@/lib/types'
 
+export type Numbering = { kind: NumKind; field: string; rows: Rec[]; excludeId?: string; autofill?: boolean }
+
 /** Form generik untuk tambah / ubah data. Mengembalikan payload siap kirim (idr/qty sudah numerik). */
-export function FormModal({ title, subtitle, fields, initial, note, submitLabel = 'Simpan', onClose, onSubmit, wide }: {
+export function FormModal({ title, subtitle, fields, initial, note, submitLabel = 'Simpan', onClose, onSubmit, wide, numbering }: {
   title: string; subtitle?: string; fields: Field[]; initial: Rec | Record<string, any>; note?: string; submitLabel?: string
-  onClose: () => void; onSubmit: (payload: Record<string, unknown>) => Promise<unknown>; wide?: boolean
+  onClose: () => void; onSubmit: (payload: Record<string, unknown>) => Promise<unknown>; wide?: boolean; numbering?: Numbering
 }) {
+  const { toast } = useStore()
   const [v, setV] = useState<Record<string, string>>(() => Object.fromEntries(fields.map(f => [f.key, String(initial[f.key] ?? '')])))
   const [busy, setBusy] = useState(false); const [err, setErr] = useState('')
+
+  // ---- penomoran otomatis (REFF / Nomor SPPD) ----
+  const nk = numbering?.field || ''
+  const chk = numbering ? checkNumber(numbering.kind, numbering.rows, nk, { value: v[nk], tipe: v.tipe, excludeId: numbering.excludeId }) : null
+  const sug = chk?.suggestion || ''
+  const lastAuto = useRef('')
+  useEffect(() => {
+    if (!numbering?.autofill || !sug) return
+    // isi otomatis hanya bila kolom kosong / masih berisi saran sebelumnya (belum diketik manual)
+    if (!v[nk] || v[nk] === lastAuto.current) { lastAuto.current = sug; setV(s => ({ ...s, [nk]: sug })) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sug])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     const missing = fields.find(f => f.required && !v[f.key]?.trim())
     if (missing) { setErr(`"${missing.label}" wajib diisi.`); return }
+    // duplikat: diblokir (saat ubah data, hanya bila nomornya memang diganti)
+    if (chk?.duplicate && v[nk].trim() !== String(initial[nk] ?? '').trim()) {
+      const m = `Nomor ${v[nk].trim()} sudah dipakai. Gunakan ${chk.suggestion}.`
+      setErr(m); toast(m, 'err'); return
+    }
     const payload: Record<string, unknown> = {}
     for (const f of fields) payload[f.key] = f.type === 'number' || f.type === 'idr' ? (v[f.key] === '' ? '' : Number(v[f.key])) : v[f.key].trim()
     setBusy(true); setErr('')
@@ -31,6 +54,9 @@ export function FormModal({ title, subtitle, fields, initial, note, submitLabel 
             <div key={f.key} className={f.type === 'longtext' && wide ? 'sm:col-span-2' : ''}>
               <label className="label" htmlFor={`f-${f.key}`}>{f.label}{f.required && <span className="text-[#d9534f]"> *</span>}</label>
               <FieldInput f={f} value={v[f.key]} onChange={x => setV(s => ({ ...s, [f.key]: x }))} disabled={busy} />
+              {numbering && f.key === nk && (
+                <NumberHint kind={numbering.kind} chk={chk} value={v[nk]} tipe={v.tipe} onUse={x => setV(s => ({ ...s, [nk]: x }))} />
+              )}
             </div>
           ))}
         </div>
