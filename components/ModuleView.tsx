@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Download, FileDown, Pencil, Plus, Search, Trash2, UploadCloud } from 'lucide-react'
 import { useStore } from './Store'
 import { Empty } from './ui'
@@ -7,16 +7,17 @@ import { FormModal } from './FormModal'
 import { ImportDialog } from './ImportDialog'
 import { createFields, type ModuleCfg } from './modules'
 import { downloadTemplate, exportRows } from '@/lib/excel'
+   import type { NumKind } from '@/lib/numbering'
 import type { Rec } from '@/lib/types'
 
 const PAGE = 25
 
 export function ModuleView({ cfg }: { cfg: ModuleCfg }) {
-  const { db, canEdit, insert, update, remove, toast } = useStore()
+     const { db, canEdit, insert, update, remove, toast, refresh } = useStore()
   const rows = db[cfg.key]
   const [q, setQ] = useState(''); const [flt, setFlt] = useState<Record<string, string>>({}); const [page, setPage] = useState(0)
   const [modal, setModal] = useState<null | { mode: 'create' } | { mode: 'edit'; rec: Rec }>(null); const [imp, setImp] = useState(false)
-
+   useEffect(() => { if (modal?.mode === 'create' && cfg.numberField) refresh() }, [modal?.mode])
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
     const out = rows.filter(r =>
@@ -86,8 +87,10 @@ export function ModuleView({ cfg }: { cfg: ModuleCfg }) {
       </div>
 
       {modal?.mode === 'create' && <FormModal wide title={cfg.addLabel} fields={createFields(cfg)} initial={cfg.defaults()} note={cfg.createNote}
+                 numbering={cfg.numberField ? { kind: cfg.key as NumKind, field: cfg.numberField, rows, autofill: true } : undefined}
         onClose={() => setModal(null)} onSubmit={async p => { check(p); await insert(cfg.key, p); toast('Data tersimpan') }} />}
       {modal?.mode === 'edit' && <FormModal wide title={`Ubah data — ${cfg.title}`} subtitle="Semua kolom, termasuk tanggal, dapat dikoreksi di sini." fields={cfg.fields} initial={modal.rec}
+                 numbering={cfg.numberField ? { kind: cfg.key as NumKind, field: cfg.numberField, rows, excludeId: modal.rec.id } : undefined}
         onClose={() => setModal(null)} onSubmit={async p => { check(p); await update(cfg.key, modal.rec.id, p); toast('Perubahan tersimpan') }} />}
       {imp && <ImportDialog kind={cfg.key} onClose={() => setImp(false)} />}
     </div>
