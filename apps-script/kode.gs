@@ -126,7 +126,7 @@ function doInsert(req) {
   var rec = sanitize(schema, req.record || {});
   applyInsertDefaults(name, rec, true);
   validateRequired(name, rec);
-
+  assertUniqueNumber(name, sh, rec, '');
   var key = keyOf(name, rec);
   if (key && key !== '|') {
     var existing = readRows(sh).rows;
@@ -148,7 +148,10 @@ function doUpdate(req) {
   var found = findById(sh, req.id);
   var patch = sanitize(schema, req.record || {}, true);
   var rec = found.rec;
+  var numField = name === 'DISPOSISI' ? 'reff' : (name === 'SPPD' ? 'nomor_sppd' : '');
+  var oldNum = numField ? String(rec[numField] || '') : '';
   Object.keys(patch).forEach(function (k) { rec[k] = patch[k]; });
+  if (numField && String(rec[numField] || '') !== oldNum) assertUniqueNumber(name, sh, rec, rec.id);   // hanya bila nomor diganti
   rec.updated_at = nowStamp();
   computeFields(name, rec);
   writeRow(sh, found.row, rec);
@@ -266,7 +269,43 @@ function keyOf(name, r) {
   if (name === 'MOM') return s(r.judul_rapat) + '|' + s(r.tanggal);
   return '';
 }
+/**
+ * Kunci keunikan nomor = (jenis, tahun, nomor urut) — sama dengan lib/numbering.ts di frontend.
+ *  ASSET     : #078/DISP/BDO/ACU/XII/2025
+ *  NON ASSET : 149/DISP-REGJB/BDO/X/2026
+ *  SPPD      : 001/SPPD/Sekre/JNEBDO/I/26
+ */
+function seqKeyOf(name, r) {
+  var v = String((name === 'DISPOSISI' ? r.reff : r.nomor_sppd) || '').trim();
+  if (!v) return '';
+  var m;
+  if (name === 'DISPOSISI') {
+    m = /^#?\s*(\d{1,4})\s*\/\s*DISP\s*\/\s*BDO\s*\/\s*ACU\s*\/\s*([IVX]+)\s*\/\s*(\d{4})$/i.exec(v);
+    if (m) return 'ASSET|' + m[3] + '|' + Number(m[1]);
+    m = /^(\d{1,4})\s*\/\s*DISP-REGJB\s*\/\s*BDO\s*\/\s*([IVX]+)\s*\/\s*(\d{4})$/i.exec(v);
+    if (m) return 'NON ASSET|' + m[3] + '|' + Number(m[1]);
+  } else {
+    m = /^(\d{1,4})\s*\/\s*SPPD\s*\/\s*Sekre\s*\/\s*(JNEBDO\d*)\s*\/\s*([IVX]+)\s*\/\s*(\d{2})$/i.exec(v);
+    if (m) return 'SPPD:' + m[2].toUpperCase() + '|20' + m[4] + '|' + Number(m[1]);
+  }
+  return 'raw|' + v.replace(/\s+/g, '').replace(/^#/, '').toLowerCase();
+}
 
+/** Tolak bila nomor (urutan) yang sama sudah dipakai data lain. Dipanggil di dalam LockService -> aman dari input bersamaan. */
+function assertUniqueNumber(name, sh, rec, excludeId) {
+  if (name !== 'DISPOSISI' && name !== 'SPPD') return;
+  var key = seqKeyOf(name, rec);
+  if (!key) return;
+  var rows = readRows(sh).rows;
+  for (var i = 0; i < rows.length; i++) {
+    if (excludeId && String(rows[i].id) === String(excludeId)) continue;
+    if (seqKeyOf(name, rows[i]) === key) {
+      var no = name === 'DISPOSISI' ? rec.reff : rec.nomor_sppd;
+      throw new Error('Nomor ' + no + ' DUPLIKAT — urutan tersebut sudah dipakai oleh "' +
+        String(rows[i].disposisi || rows[i].karyawan || '').slice(0, 60) + '". Muat ulang (Refresh) lalu pakai nomor berikutnya.');
+    }
+  }
+}
 /* ------------------------------------------------------------------ */
 /*  SHEET HELPERS                                                      */
 /* ------------------------------------------------------------------ */
