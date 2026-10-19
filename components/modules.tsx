@@ -12,6 +12,7 @@ export type ModuleCfg = {
   key: ImportKind; eyebrow: string; title: string; addLabel: string; fields: Field[]; createKeys: string[]; createNote?: string
   defaults: () => Record<string, string>; search: string[]; sort: string; filters: Filter[]; columns: Col[]
   stats: (rows: Rec[]) => { label: string; value: string; hint?: string }[]; validate?: (p: Record<string, unknown>) => string | null; emptyHint: string
+  numberField?: 'reff' | 'nomor_sppd'
 }
 
 const pick = (keys: string[]) => keys.map(k => DISPOSISI_FIELDS.find(f => f.key === k) || SPPD_FIELDS.find(f => f.key === k) || MOM_FIELDS.find(f => f.key === k)!)
@@ -25,7 +26,7 @@ const Sm = ({ children }: { children: React.ReactNode }) => <span className="blo
 
 export const DISPOSISI: ModuleCfg = {
   key: 'DISPOSISI', eyebrow: 'Workspace / Disposisi SLA', title: 'Disposisi SLA', addLabel: 'Tambah disposisi',
-  fields: DISPOSISI_FIELDS, createKeys: ['tipe', 'dept', 'reff', 'disposisi', 'qty', 'idr', 'status', 'keterangan'],
+  fields: DISPOSISI_FIELDS, createKeys: ['tipe', 'dept', 'reff', 'disposisi', 'qty', 'idr', 'status', 'keterangan'],numberField: 'reff',
   createNote: 'Tanggal Pengajuan Disposisi terisi otomatis (hari ini, WIB). Approval BM → Kirim ke User dicatat dari tabel dengan tombol tanggal.',
   defaults: () => ({ status: 'On Progres' }), search: ['reff', 'disposisi', 'keterangan', 'dept'], sort: 'pengajuan_disposisi',
   emptyHint: 'Belum ada data. Klik "Tambah disposisi" atau "Upload rekap" untuk memindahkan data lama.',
@@ -67,7 +68,7 @@ export const DISPOSISI: ModuleCfg = {
 
 export const SPPD: ModuleCfg = {
   key: 'SPPD', eyebrow: 'Workspace / Rekap SPPD', title: 'Rekap SPPD', addLabel: 'Terbitkan SPPD baru',
-  fields: SPPD_FIELDS, createKeys: ['nomor_sppd', 'karyawan', 'mulai_perjalanan', 'berakhir_perjalanan'],
+  fields: SPPD_FIELDS, createKeys: ['nomor_sppd', 'karyawan', 'mulai_perjalanan', 'berakhir_perjalanan'],numberField: 'nomor_sppd',
   createNote: 'Tanggal Pengajuan User terisi otomatis (hari ini, WIB). Approve BM & SPPD Dikirim ke User dicatat dari tabel dengan tombol tanggal.',
   defaults: () => ({}), search: ['nomor_sppd', 'karyawan'], sort: 'pengajuan_user', emptyHint: 'Belum ada data. Klik "Terbitkan SPPD baru" atau "Upload rekap".',
   validate: p => (p.mulai_perjalanan && p.berakhir_perjalanan && String(p.berakhir_perjalanan) < String(p.mulai_perjalanan) ? 'Tanggal berakhir tidak boleh sebelum tanggal mulai.' : null),
