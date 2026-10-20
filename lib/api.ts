@@ -1,5 +1,5 @@
 import { API_URL } from './config'
-import type { DB, Rec, Role, SheetKey } from './types'
+  import type { DB, ImportState, Rec, Role, SheetKey } from './types'
 
 async function post<T = any>(body: Record<string, unknown>): Promise<T> {
   // text/plain => "simple request", tidak memicu preflight CORS pada Apps Script
@@ -12,7 +12,8 @@ async function post<T = any>(body: Record<string, unknown>): Promise<T> {
 }
 
 export const api = {
-  list: (pin: string) => post<{ role: Role; data: DB; server_time: string }>({ action: 'list', pin }),
+  list: (pin: string) => post<{ role: Role; data: DB; import?: ImportState; server_time: string }>({ action: 'list', pin }),
+  setImport: (pin: string, sheet: SheetKey, hours: number) => post<{ import: ImportState }>({ action: 'set_import', pin, sheet, hours }),
   insert: (pin: string, sheet: SheetKey, record: Record<string, unknown>) => post<{ record: Rec }>({ action: 'insert', pin, sheet, record }),
   update: (pin: string, sheet: SheetKey, id: string, record: Record<string, unknown>) => post<{ record: Rec }>({ action: 'update', pin, sheet, id, record }),
   stamp: (pin: string, sheet: SheetKey, id: string, field: string, clear = false) => post<{ record: Rec }>({ action: 'stamp', pin, sheet, id, field, clear }),

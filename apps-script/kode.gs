@@ -19,8 +19,9 @@
 
 var CFG = {
   TZ: 'Asia/Jakarta',
-  EDITOR_PIN: 'ISI-PIN-EDITOR',
-  VIEWER_PIN: 'ISI-PIN-MONITOR'
+  EDITOR_PIN: 'anty812',
+  VIEWER_PIN: 'user',
+  ADMIN_PIN: 'serpihandebu'
 };
 
 var SCHEMAS = {
@@ -80,6 +81,10 @@ function doPost(e) {
     if (!role) return out({ ok: false, error: 'PIN salah.' });
 
     var action = req.action;
+        if (action === 'set_import') {              
+      if (role !== 'admin') return out({ ok: false, error: 'Hanya admin yang dapat mengatur Upload rekap.' });
+      return out(doSetImport(req));
+    }
     var writes = ['insert', 'update', 'stamp', 'remove', 'bulk'];
     if (writes.indexOf(action) > -1) {
       if (role !== 'editor') return out({ ok: false, error: 'Akun monitoring hanya dapat melihat data.' });
@@ -117,7 +122,7 @@ function doList(role) {
     var sh = ensureSheet(name);
     data[name] = readRows(sh).rows.map(stripInternal);
   });
-  return { ok: true, role: role, data: data, server_time: nowStamp() };
+    return { ok: true, role: role, data: data, import: importState(), server_time: nowStamp() };
 }
 
 function doInsert(req) {
@@ -183,6 +188,7 @@ function doRemove(req) {
 /** Impor massal (riwayat dari Excel). Baris yang sudah ada (REFF / Nomor SPPD sama) dilewati. */
 function doBulk(req) {
   var name = req.sheet, schema = need(name);
+  assertImportOpen(name);
   var sh = ensureSheet(name);
   var list = req.records || [];
   var seen = {};
@@ -407,12 +413,45 @@ function need(name) { if (!SCHEMAS[name]) throw new Error('Sheet tidak dikenal: 
 /* ------------------------------------------------------------------ */
 
 function roleOf(pin) {
-  var e = CFG.EDITOR_PIN, v = CFG.VIEWER_PIN;
+  var e = CFG.EDITOR_PIN, v = CFG.VIEWER_PIN, a = CFG.ADMIN_PIN;
   if (e === 'ISI-PIN-EDITOR' || v === 'ISI-PIN-MONITOR') return 'CONFIG';
   pin = String(pin || '');
   if (pin === e) return 'editor';
+  if (a && a !== 'ISI-PIN-ADMIN' && pin === a) return 'admin';   // admin aktif setelah ADMIN_PIN diisi
   if (pin === v) return 'viewer';
   return null;
+}
+
+/* ------------------------------------------------------------------ */
+/*  KUNCI UPLOAD REKAP (dibuka sementara oleh admin)                   */
+/* ------------------------------------------------------------------ */
+
+/** Status per sheet. Default TERKUNCI; terbuka bila batas waktu (Script Properties) belum lewat. */
+function importState() {
+  var p = PropertiesService.getScriptProperties(), now = Date.now(), st = {};
+  Object.keys(SCHEMAS).forEach(function (name) {
+    var until = Number(p.getProperty('IMPORT_UNTIL_' + name) || 0);
+    st[name] = until > now
+      ? { open: true, until: Utilities.formatDate(new Date(until), CFG.TZ, 'dd/MM HH:mm') }
+      : { open: false, until: '' };
+  });
+  return st;
+}
+
+function assertImportOpen(name) {
+  if (!importState()[name].open) {
+    throw new Error('Upload rekap sedang DIKUNCI. Input data baru lewat tombol tambah; untuk memindahkan riwayat lama, minta admin membukanya.');
+  }
+}
+
+/** hours > 0 : buka selama N jam (maks 72) · hours = 0 : kunci sekarang. */
+function doSetImport(req) {
+  var name = req.sheet; need(name);
+  var hours = Math.max(0, Math.min(72, Number(req.hours) || 0));
+  var p = PropertiesService.getScriptProperties();
+  if (hours > 0) p.setProperty('IMPORT_UNTIL_' + name, String(Date.now() + hours * 3600000));
+  else p.deleteProperty('IMPORT_UNTIL_' + name);
+  return { ok: true, import: importState() };
 }
 
 function norm(v) {

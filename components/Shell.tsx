@@ -18,7 +18,7 @@ const NAV = [
 type Id = (typeof NAV)[number]['id']
 
 export function Shell() {
-  const { role, canEdit, syncing, lastSync, refresh, logout } = useStore()
+  const { role, canEdit, isAdmin, syncing, lastSync, refresh, logout } = useStore()
   const [active, setActive] = useState<Id>('home')
   // Shell hanya dirender di klien setelah login, jadi aman membaca localStorage langsung (tanpa kedip)
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('da_nav') === '1'); const [drawer, setDrawer] = useState(false)
@@ -54,7 +54,7 @@ export function Shell() {
           <header className="flex flex-wrap items-center gap-3 px-4 pb-3 pt-5 sm:px-8">
             <button className="rounded-xl p-2 hover:bg-white/70 md:hidden" aria-label="Buka menu" onClick={() => setDrawer(d => !d)}>{drawer ? <X size={20} /> : <Menu size={20} />}</button>
             <p className="text-lg text-slate-500">Daily <b className="font-bold text-slate-900">Activity</b></p>
-            <span className={cx('pill', canEdit ? 'pill-green' : 'pill-amber')}>{canEdit ? 'Editor' : <><Eye size={12} />Monitoring (hanya lihat)</>}</span>
+            <span className={cx('pill', canEdit ? 'pill-green' : 'pill-amber')}>{canEdit ? 'Editor' :   <><Eye size={12} />{isAdmin ? 'Admin (monitoring)' : 'Monitoring (hanya lihat)'}</>}</span>
             {canEdit && <GreetingTicker />}
             <div className="ml-auto flex items-center gap-2">
               <span className="hidden text-[11px] mute sm:inline">{lastSync && `Sinkron ${lastSync}`}</span>

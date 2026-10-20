@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Download, FileDown, Pencil, Plus, Search, Trash2, UploadCloud } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, FileDown, Lock, Pencil, Plus, Search, Trash2, UploadCloud } from 'lucide-react'
 import { useStore } from './Store'
 import { Empty } from './ui'
 import { FormModal } from './FormModal'
 import { ImportDialog } from './ImportDialog'
+import { ImportLock } from './ImportLock'
 import { createFields, type ModuleCfg } from './modules'
 import { downloadTemplate, exportRows } from '@/lib/excel'
    import type { NumKind } from '@/lib/numbering'
@@ -13,7 +14,8 @@ import type { Rec } from '@/lib/types'
 const PAGE = 25
 
 export function ModuleView({ cfg }: { cfg: ModuleCfg }) {
-     const { db, canEdit, insert, update, remove, toast, refresh } = useStore()
+  const { db, canEdit, insert, update, remove, toast, refresh, imports, isAdmin } = useStore()
+  const importOpen = canEdit && !!imports[cfg.key]?.open
   const rows = db[cfg.key]
   const [q, setQ] = useState(''); const [flt, setFlt] = useState<Record<string, string>>({}); const [page, setPage] = useState(0)
   const [modal, setModal] = useState<null | { mode: 'create' } | { mode: 'edit'; rec: Rec }>(null); const [imp, setImp] = useState(false)
@@ -39,9 +41,12 @@ export function ModuleView({ cfg }: { cfg: ModuleCfg }) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] mute">{cfg.eyebrow}</p><h2 className="mt-1 text-2xl font-extrabold tracking-tight">{cfg.title}</h2></div>
         <div className="flex flex-wrap gap-2">
-          <button className="btn btn-soft" onClick={() => downloadTemplate(cfg.key)}><FileDown size={14} />Template</button>
+          {importOpen && <button className="btn btn-soft" onClick={() => downloadTemplate(cfg.key)}><FileDown size={14} />Template</button>}
           <button className="btn btn-soft" onClick={() => exportRows(cfg.key, filtered)} disabled={!filtered.length}><Download size={14} />Export</button>
-          {canEdit && <button className="btn btn-soft" onClick={() => setImp(true)}><UploadCloud size={14} />Upload rekap</button>}
+          {canEdit && (importOpen
+          ? <button className="btn btn-soft" onClick={() => setImp(true)}><UploadCloud size={14} />Upload rekap</button>
+          : <button className="btn btn-soft" disabled title="Dikunci — minta admin untuk membukanya (khusus memindahkan riwayat lama)"><Lock size={14} />Upload rekap</button>)}
+          {isAdmin && <ImportLock sheet={cfg.key} />}
           {canEdit && <button className="btn btn-dark" onClick={() => setModal({ mode: 'create' })}><Plus size={14} />{cfg.addLabel}</button>}
         </div>
       </div>

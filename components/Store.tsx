@@ -1,14 +1,14 @@
 'use client'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '@/lib/api'
-import { EMPTY_DB, type DB, type Rec, type Role, type SheetKey } from '@/lib/types'
+import { EMPTY_DB, type DB, type ImportState, type Rec, type Role, type SheetKey } from '@/lib/types'
 
 type Toast = { id: number; msg: string; tone: 'ok' | 'err' }
 type Status = 'boot' | 'login' | 'ready'
 type Patch = Record<string, unknown>
 
 type Store = {
-  status: Status; role: Role | null; canEdit: boolean; db: DB; syncing: boolean; lastSync: string
+  status: Status; role: Role | null; canEdit: boolean; isAdmin: boolean; imports: ImportState; setImport: (s: SheetKey, hours: number) => Promise<void>; db: DB;
   login: (pin: string, remember: boolean) => Promise<void>; logout: () => void; refresh: () => Promise<void>
   insert: (s: SheetKey, rec: Patch, optimistic?: boolean) => Promise<Rec>
   update: (s: SheetKey, id: string, patch: Patch, optimistic?: boolean) => Promise<Rec>
@@ -26,6 +26,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<Status>('boot')
   const [role, setRole] = useState<Role | null>(null)
   const [db, setDb] = useState<DB>(EMPTY_DB)
+  const [imports, setImports] = useState<ImportState>({})
   const [syncing, setSyncing] = useState(false)
   const [lastSync, setLastSync] = useState('')
   const [toasts, setToasts] = useState<Toast[]>([])
@@ -41,9 +42,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const load = useCallback(async () => {
-    const res = await api.list(pin.current)
-    commit(res.data); setRole(res.role)
-    setLastSync(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' }))
+   const res = await api.list(pin.current)
+   commit(res.data); setRole(res.role); setImports(res.import || {})
+   setLastSync(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' }))
   }, [])
 
   const refresh = useCallback(async () => {
@@ -63,7 +64,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem(KEY); sessionStorage.removeItem(KEY)
-    pin.current = ''; commit(EMPTY_DB); setRole(null); setStatus('login')
+    pin.current = '';    commit(EMPTY_DB); setRole(null); setImports({}); setStatus('login')
   }, [])
 
   // auto-login bila PIN tersimpan
@@ -120,11 +121,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   })
 
   const bulk: Store['bulk'] = (s, records) => guard(() => api.bulk(pin.current, s, records))
-
+  const setImport: Store['setImport'] = (s, hours) => guard(async () => { const r = await api.setImport(pin.current, s, hours); setImports(r.import) })
   const value = useMemo<Store>(() => ({
-    status, role, canEdit: role === 'editor', db, syncing, lastSync, login, logout, refresh, insert, update, stamp, remove, bulk, toast, toasts,
+    status, role,    canEdit: role === 'editor', isAdmin: role === 'admin', imports, setImport, db, syncing, lastSync, login, logout, refresh, insert, update, stamp, remove, bulk, toast, toasts,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [status, role, db, syncing, lastSync, toasts])
+  }), [status, role, db, imports, syncing, lastSync, toasts])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
