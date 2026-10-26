@@ -92,6 +92,8 @@ export const SPPD: ModuleCfg = {
     { label: 'Perjalanan Dinas', cell: r => <span className="whitespace-nowrap">{fmtDate(r.mulai_perjalanan)}{r.berakhir_perjalanan && r.berakhir_perjalanan !== r.mulai_perjalanan ? ` → ${fmtDate(r.berakhir_perjalanan)}` : ''}{(() => { const d = diffDays(r.berakhir_perjalanan, r.mulai_perjalanan); return d !== null && d >= 0 ? <Sm>{d + 1} hari</Sm> : null })()}</span> },
     { label: 'Pengajuan User', cell: r => <span className="whitespace-nowrap">{fmtDate(r.pengajuan_user)}</span> },
     { label: 'Approve BM', cell: r => <StampCell sheet="SPPD" rec={r} field="approve_bm" label="Approve" /> },
+    { label: 'Head Regional', cell: r => <StampCell sheet="SPPD" rec={r} field="approval_head_regional" label="Setujui" /> },
+    { label: 'VP', cell: r => <StampCell sheet="SPPD" rec={r} field="approval_vp" label="Setujui" /> },
     { label: 'Dikirim ke User', cell: r => <StampCell sheet="SPPD" rec={r} field="sppd_dikirim_user" label="Kirim" /> },
     { label: 'SLA', cell: r => { const s = sppdSla(r); return s.ok === null ? <span className="mute">—</span> : <Pill tone={s.ok ? 'green' : 'red'}>{s.ok ? 'Achive' : 'Tidak achive'} · {dayTxt(s.days)}</Pill> } },
   ],
