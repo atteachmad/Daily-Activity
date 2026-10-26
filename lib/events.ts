@@ -10,7 +10,10 @@ const DISPO_DATES: [string, string][] = [
   ['pengajuan_disposisi', 'Pengajuan disposisi'], ['approval_bm', 'Approval BM'], ['approval_head_regional', 'Approval Head Regional'],
   ['approval_vp', 'Approval VP'], ['approval_direksi', 'Approval Direksi'], ['disposisi_selesai', 'Disposisi selesai'], ['disposisi_kirim_user', 'Disposisi dikirim ke user'],
 ]
-const SPPD_DATES: [string, string][] = [['pengajuan_user', 'Pengajuan SPPD'], ['approve_bm', 'Approve BM'], ['sppd_dikirim_user', 'SPPD dikirim ke user']]
+const SPPD_DATES: [string, string][] = [
+  ['pengajuan_user', 'Pengajuan SPPD'], ['approve_bm', 'Approve BM'], ['approval_head_regional', 'Approval Head Regional'],
+  ['approval_vp', 'Approval VP'], ['sppd_dikirim_user', 'SPPD dikirim ke user'],
+]
 const clip = (s: unknown, n = 70) => { const t = String(s ?? ''); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
 /** Gabungkan semua tanggal dari semua menu menjadi indeks tanggal -> daftar aktivitas. */

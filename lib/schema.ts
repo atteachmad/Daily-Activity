@@ -26,6 +26,8 @@ export const DISPOSISI_FIELDS: Field[] = [
 export const SPPD_FIELDS: Field[] = [
   { key: 'pengajuan_user', label: 'Pengajuan User', type: 'date', aliases: ['pengajuanuser'] },
   { key: 'approve_bm', label: 'Approve BM', type: 'date', aliases: ['appovebm', 'approvebm', 'appovebbp', 'approvebbp', 'approvalbm'] },
+  { key: 'approval_head_regional', label: 'Approval Head Regional', type: 'date', aliases: ['approvalheadregional', 'approveheadregional', 'headregional'] },
+  { key: 'approval_vp', label: 'Approval VP', type: 'date', aliases: ['approvalvp', 'approvevp', 'vp'] },
   { key: 'sppd_dikirim_user', label: 'SPPD Dikirim Ke User', type: 'date', aliases: ['sppddikirimkeuser'] },
   { key: 'nomor_sppd', label: 'Nomor SPPD', type: 'text', required: true, aliases: ['nomorsppd', 'nosppd'] },
   { key: 'mulai_perjalanan', label: 'Mulai Perjalanan Dinas', type: 'date', aliases: ['mulaiperjalanandinas', 'keteranganperjalanandinas', 'mulai'] },
@@ -71,7 +73,7 @@ export const TEMPLATE_EXAMPLE: Record<ImportKind, Record<string, string | number
     status: 'Done', reff: '001/DISP-REGJB/BDO/I/2026', disposisi: 'Contoh: Disposisi Pengajuan Flat Tarif Kiriman Dokumen', qty: 1, idr: 48500000, keterangan: 'Contoh baris — hapus sebelum upload',
   },
   SPPD: {
-    pengajuan_user: '2026-01-05', approve_bm: '2026-01-05', sppd_dikirim_user: '2026-01-06', nomor_sppd: '001/SPPD/Sekre/JNEBDO/I/26',
+    pengajuan_user: '2026-01-05', approve_bm: '2026-01-05', approval_head_regional: '2026-01-06', approval_vp: '2026-01-06', sppd_dikirim_user: '2026-01-06', nomor_sppd: '001/SPPD/Sekre/JNEBDO/I/26',
     mulai_perjalanan: '2026-01-08', berakhir_perjalanan: '2026-01-09', karyawan: 'Contoh Nama (Dept)',
   },
   MOM: {
